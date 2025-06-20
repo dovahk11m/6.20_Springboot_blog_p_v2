@@ -1,12 +1,9 @@
 package com.tenco.blog.board;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -20,17 +17,28 @@ public class BoardPersistRepository {
 
     private final EntityManager em;
 
+    //게시글 삭제기능 - 영속성 컨텍스트로
+    @Transactional
+    public void deleteById(Long id) {
+        em.remove(em.find(Board.class, id));
+    }
 
+    //게시글 수정
+    //기본키 조회 em.find()
+    @Transactional
+    public void updatedById(Long id, String title, String content, String username) {
 
+        Board board = em.find(Board.class, id);
 
-
-
+        board.setTitle(title);
+        board.setContent(content);
+        board.setUsername(username);
+    }
 
     //게시글 1건 조회
     //네이티브 쿼리
     //em.find() 👍 기본키 조회는 이게 낫다
     //JPQL
-
     public Board findById(Long id) {
         //1차캐시 활용
         //Board board = em.find(Board.class, id);
@@ -48,7 +56,7 @@ public class BoardPersistRepository {
         //query = query.setParameter("id", id);
         //Board board = (Board) query.getSingleResult();
 
-        try{
+        try {
             //주의: 결과가 없으면 예외 NoResultException
             return em.createQuery(jpql, Board.class)
                     .setParameter("id", id)
@@ -62,7 +70,6 @@ public class BoardPersistRepository {
     코드가 복잡해질 수 있다.
     getSingleRuselt() 때문에 예외처리 필요
      */
-
 
 
     //JPQL을 사용한 게시글 목록 조회

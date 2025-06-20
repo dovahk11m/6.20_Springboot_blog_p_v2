@@ -15,6 +15,27 @@ public class BoardPersistRepositoryTest {
     @Autowired
     private BoardPersistRepository br;
 
+    //단일조회 테스트
+    @Test
+    public void findById_test() {
+        //given
+        Long id = 1L;
+
+        //when
+        Board board = br.findById(id);
+
+        //then
+        System.out.println(board.getId());
+        System.out.println(board.getTitle());
+        System.out.println(board.getContent());
+        System.out.println(board.getUsername());
+
+        Assertions.assertThat(board.getTitle()).isEqualTo("제목1");
+        Assertions.assertThat(board).isNotNull();
+    }
+
+
+    //전체조회 테스트
     @Test
     public void findAll_test() {
         //given
