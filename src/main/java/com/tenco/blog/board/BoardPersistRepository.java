@@ -1,9 +1,12 @@
 package com.tenco.blog.board;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -16,6 +19,51 @@ public class BoardPersistRepository {
     #성능향상 #안정성 #동기화*/
 
     private final EntityManager em;
+
+
+
+
+
+
+
+    //게시글 1건 조회
+    //네이티브 쿼리
+    //em.find() 👍 기본키 조회는 이게 낫다
+    //JPQL
+
+    public Board findById(Long id) {
+        //1차캐시 활용
+        //Board board = em.find(Board.class, id);
+        //return board;
+        return em.find(Board.class, id);
+    }
+
+    //JPQL 사용한 조회방법(학습용)
+    public Board findByIdJPQL(Long id) {
+
+        //네임드 파라미터 권장
+        String jpql = " SELECT b FROM Board b WHERE b.id = :id ";
+
+        //Query query = em.createQuery(jpql, Board.class);
+        //query = query.setParameter("id", id);
+        //Board board = (Board) query.getSingleResult();
+
+        try{
+            //주의: 결과가 없으면 예외 NoResultException
+            return em.createQuery(jpql, Board.class)
+                    .setParameter("id", id)
+                    .getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    /* JPQL의 단점
+    1차캐시 우회하여 항상 DB 접근
+    코드가 복잡해질 수 있다.
+    getSingleRuselt() 때문에 예외처리 필요
+     */
+
+
 
     //JPQL을 사용한 게시글 목록 조회
     //JPQL이란 엔티티 객체를 대상으로 하는 객체지향 쿼리
