@@ -1,4 +1,4 @@
-package com.tenco.blog.model;
+package com.tenco.blog.board;
 
 import jakarta.persistence.*;
 import lombok.Data;

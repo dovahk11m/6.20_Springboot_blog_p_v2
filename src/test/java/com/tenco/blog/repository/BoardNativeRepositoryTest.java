@@ -1,7 +1,6 @@
 package com.tenco.blog.repository;
 
-import com.tenco.blog.model.Board;
-import jakarta.persistence.Query;
+import com.tenco.blog.board.Board;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
