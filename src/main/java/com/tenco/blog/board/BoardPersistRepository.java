@@ -22,7 +22,43 @@ public class BoardPersistRepository {
 
 
 
+    //게시글 삭제 (feat. 영속성 컨텍스트)
+    @Transactional
+    public void deleteById(Long id) {
 
+        Board board = em.find(Board.class, id);
+
+        em.remove(board);
+    }
+    /* 삭제의 흐름
+       1.먼저 삭제할 엔티티를 영속 상태로 조회한다
+       2.영속 상태의 엔티티를 삭제 상태로 변경한다
+       3.트랜잭션이 커밋되면 실제 DB 내용도 삭제된다.
+       DELETE SQL 자동 작성
+       CASCADE 설정시 연관관게 처리도 자동 수행
+     */
+
+
+
+    //게시글 수정 (DB 접근 계층)
+    @Transactional
+    public void update(Long id, BoardRequest.UpdateDTO updateDTO) {
+
+        Board board = findById(id); //1차 캐시에 키값 구조로 저장
+
+        board.setTitle(updateDTO.getTitle());
+        board.setContent(updateDTO.getContent());
+        board.setUsername(updateDTO.getUsername());
+    }
+    /* 트랜잭션이 끝나면 영속성 컨텍스트에서 변경을 감지한다.
+       이를 더티 체킹 Dirty Checking 이라고 한다.
+       1.영속성 컨텍스트가 엔티티 최초 상태를 스냅샷으로 보관한다.
+       2.필드 값이 변경되면 현재 상태와 스냅샷을 비교한다.
+       3.트랜잭션 커밋 시점에 변경된 필드만 UPDATE 쿼리를 자동생성한다.
+       ex) UPDATE board_tb SET title=?, content=?, username=? WHERE id =?
+
+       이게 싫으면 네이티브쿼리나 JPQL을 직접 작성하는 방법도 있다.
+     */
 
 
 
@@ -30,7 +66,6 @@ public class BoardPersistRepository {
     //네이티브 쿼리
     //em.find() 👍 기본키 조회는 이게 낫다
     //JPQL
-
     public Board findById(Long id) {
         //1차캐시 활용
         //Board board = em.find(Board.class, id);
@@ -48,7 +83,7 @@ public class BoardPersistRepository {
         //query = query.setParameter("id", id);
         //Board board = (Board) query.getSingleResult();
 
-        try{
+        try {
             //주의: 결과가 없으면 예외 NoResultException
             return em.createQuery(jpql, Board.class)
                     .setParameter("id", id)
@@ -62,7 +97,6 @@ public class BoardPersistRepository {
     코드가 복잡해질 수 있다.
     getSingleRuselt() 때문에 예외처리 필요
      */
-
 
 
     //JPQL을 사용한 게시글 목록 조회
